@@ -8,6 +8,7 @@ var _start_angle = 0 setget _private, _private
 var _percent_visible = 1 setget _private, _private
 var _appear_at_once = false setget _private, _private
 var _allow_node2d = false setget _private, _private
+var _start_empty = false setget _private, _private
 var _custom_animator_func = null setget _private, _private
 
 ## Cached variables ##
@@ -52,6 +53,9 @@ func is_display_all_at_once(): return _appear_at_once
 func set_allow_node2d(enable): _allow_node2d = bool(enable);  _resort()
 func is_allowing_node2d(): return _allow_node2d
 
+func set_start_empty(enable): _start_empty = bool(enable);  _resort()
+func is_start_empty(): return _start_empty
+
 func get_minimum_size():
 	return _cached_min_size
 
@@ -61,6 +65,7 @@ func _get_property_list():
 		{type = TYPE_BOOL, name = "arrange/force_squares"},
 		{type = TYPE_BOOL, name = "arrange/force_expand"},
 		{type = TYPE_REAL, name = "arrange/start_angle", hint = PROPERTY_HINT_RANGE, hint_string = "-1080,1080,0.01"},
+		{type = TYPE_BOOL, name = "arrange/start_empty"},
 		{type = TYPE_BOOL, name = "arrange/allow_node2d"},
 		{type = TYPE_REAL, name = "animate/percent_visible", hint = PROPERTY_HINT_RANGE, hint_string = "0,1,0.01"},
 		{type = TYPE_BOOL, name = "animate/all_at_once"}
@@ -70,9 +75,10 @@ func _set(property, value):
 	if property == "arrange/force_squares": set_force_squares(value)
 	if property == "arrange/force_expand": set_force_expand(value)
 	elif property == "arrange/start_angle": set_start_angle_deg(value)
+	elif property == "arrange/start_empty": set_start_empty(value)
+	elif property == "arrange/allow_node2d": set_allow_node2d(value)
 	elif property == "animate/percent_visible": set_percent_visible(value)
 	elif property == "animate/all_at_once": set_display_all_at_once(value)
-	elif property == "arrange/allow_node2d": set_allow_node2d(value)
 	else:
 		return false
 	
@@ -82,9 +88,10 @@ func _get(property):
 	if property == "arrange/force_squares": return _force_squares
 	if property == "arrange/force_expand": return _force_expand
 	elif property == "arrange/start_angle": return rad2deg(_start_angle)
+	elif property == "arrange/start_empty": return _start_empty
+	elif property == "arrange/allow_node2d": return _allow_node2d
 	elif property == "animate/percent_visible": return _percent_visible
 	elif property == "animate/all_at_once": return _appear_at_once
-	elif property == "arrange/allow_node2d": return _allow_node2d
 
 ## Main Logic ##
 
@@ -123,7 +130,9 @@ func _resort():
 			var child = children[i]
 			angle_for_child[i] += (2 * PI - angle_required) * _get_child_stretch_ratio(child) / total_stretch_ratio
 	
-	var angle_reached = - angle_for_child[0] / 2 + _start_angle
+	var angle_reached = _start_angle
+	if !_start_empty:
+		angle_reached -= angle_for_child[0] / 2
 	
 	var appear = _percent_visible
 	if !_appear_at_once:
