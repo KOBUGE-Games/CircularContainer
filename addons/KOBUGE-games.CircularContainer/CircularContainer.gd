@@ -185,9 +185,9 @@ func _update_cached_min_size():
 	if _cached_min_size_key == key:
 		return
 	
-	var iter = 0
+#	var iter = 0
 	while max_radius > min_radius + 0.5:
-		iter += 1
+#		iter += 1
 		var new_radius = (max_radius + min_radius) / 2
 		
 		var angle_required = 0
@@ -199,7 +199,7 @@ func _update_cached_min_size():
 		else:
 			min_radius = new_radius # The angle needed is too high, we continue trying larger values
 	
-	print(max_radius, "; found in ", iter, " iterations")
+#	print(max_radius, "; found in ", iter, " iterations")
 	
 	_cached_min_size = Vector2(max_radius, max_radius) * 2 + min_child_size
 	_cached_min_size_key = key
