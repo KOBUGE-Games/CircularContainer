@@ -42,7 +42,7 @@ func set_start_angle(rad): _start_angle = float(rad); _restrt()
 func get_start_angle(): return _start_angle
 
 func set_start_angle_deg(angle): _start_angle = deg2rad(float(angle)); _resort()
-func get_start_angle_deg(): return deg2rad(_start_angle)
+func get_start_angle_deg(): return rad2deg(_start_angle)
 
 func set_percent_visible(percent): _percent_visible = clamp(float(percent), 0, 1); _resort()
 func get_percent_visible(): return _percent_visible
