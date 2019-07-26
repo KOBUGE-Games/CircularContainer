@@ -2,19 +2,19 @@ tool
 extends Container
 
 ## Properties ##
-var _force_squares = false setget set_force_squares, _private
-var _force_expand = false setget set_force_expand, _private
-var _start_angle = 0 setget set_start_angle, get_start_angle
-var _percent_visible = 1 setget set_percent_visible, get_percent_visible
-var _appear_at_once = false
-var _allow_node2d = false setget set_allow_node2d, _private
-var _start_empty = false setget set_start_empty, _private
-var _custom_animator_func = null
+var _force_squares = false setget _private_set, _private_get
+var _force_expand = false setget _private_set, _private_get
+var _start_angle = 0 setget _private_set, _private_get
+var _percent_visible = 1 setget _private_set, _private_get
+var _appear_at_once = false setget _private_set, _private_get
+var _allow_node2d = false setget _private_set, _private_get
+var _start_empty = false setget _private_set, _private_get
+var _custom_animator_func = null setget _private_set, _private_get
 
 ## Cached variables ##
-var _cached_min_size_key = ""
-var _cached_min_size = Vector2(1,1)
-var _cached_min_size_dirty = false
+var _cached_min_size_key = "" setget _private_set, _private_get
+var _cached_min_size = Vector2(1,1) setget _private_set, _private_get
+var _cached_min_size_dirty = false setget _private_set, _private_get
 
 ## Callbacks ##
 
@@ -296,7 +296,10 @@ func _get_max_angle_for_diagonal(diagonal, radius):
 	else:
 		return asin(fit_length / radius) * 2
 
+func _private_set(value = null):
+	print("Invalid access to private variable!")
+	return value
 
-func _private(value = null):
+func _private_get(value = null):
 	print("Invalid access to private variable!")
 	return value
