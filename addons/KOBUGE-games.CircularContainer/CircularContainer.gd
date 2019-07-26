@@ -2,19 +2,19 @@ tool
 extends Container
 
 ## Properties ##
-var _force_squares = false setget _private, _private
-var _force_expand = false setget _private, _private
-var _start_angle = 0 setget _private, _private
-var _percent_visible = 1 setget _private, _private
-var _appear_at_once = false setget _private, _private
-var _allow_node2d = false setget _private, _private
-var _start_empty = false setget _private, _private
-var _custom_animator_func = null setget _private, _private
+var _force_squares = false setget _private_set, _private_get
+var _force_expand = false setget _private_set, _private_get
+var _start_angle = 0 setget _private_set, _private_get
+var _percent_visible = 1 setget _private_set, _private_get
+var _appear_at_once = false setget _private_set, _private_get
+var _allow_node2d = false setget _private_set, _private_get
+var _start_empty = false setget _private_set, _private_get
+var _custom_animator_func = null setget _private_set, _private_get
 
 ## Cached variables ##
-var _cached_min_size_key = "" setget _private, _private
-var _cached_min_size = Vector2(1,1) setget _private, _private
-var _cached_min_size_dirty = false setget _private, _private
+var _cached_min_size_key = "" setget _private_set, _private_get
+var _cached_min_size = Vector2(1,1) setget _private_set, _private_get
+var _cached_min_size_dirty = false setget _private_set, _private_get
 
 ## Callbacks ##
 
@@ -32,29 +32,61 @@ func set_custom_animator(object, method): # Params of animator function : node (
 func unset_custom_animator():
 	_custom_animator_func = null
 
-func set_force_squares(enable): _force_squares = bool(enable);  _resort()
-func is_force_squares_enabled(): return _force_squares
+func set_force_squares(enable):
+	_force_squares = bool(enable)
+	_resort();
 
-func set_force_expand(enable): _force_expand = bool(enable);  _resort()
-func is_force_expand_enabled(): return _force_expand
+func is_force_squares_enabled():
+	return _force_squares
 
-func set_start_angle(rad): _start_angle = float(rad); _restrt()
-func get_start_angle(): return _start_angle
+func set_force_expand(enable): 
+	_force_expand = bool(enable)
+	_resort()
 
-func set_start_angle_deg(angle): _start_angle = deg2rad(float(angle)); _resort()
-func get_start_angle_deg(): return rad2deg(_start_angle)
+func is_force_expand_enabled():
+	return _force_expand
 
-func set_percent_visible(percent): _percent_visible = clamp(float(percent), 0, 1); _resort()
-func get_percent_visible(): return _percent_visible
+func set_start_angle(rad):
+	_start_angle = float(rad)
+	_resort()
+	
+func get_start_angle():
+	return _start_angle
 
-func set_display_all_at_once(enable): _appear_at_once = bool(enable);  _resort()
-func is_display_all_at_once(): return _appear_at_once
+func set_start_angle_deg(angle):
+	_start_angle = deg2rad(float(angle))
+	_resort()
 
-func set_allow_node2d(enable): _allow_node2d = bool(enable);  _resort()
-func is_allowing_node2d(): return _allow_node2d
+func get_start_angle_deg():
+	return rad2deg(_start_angle)
 
-func set_start_empty(enable): _start_empty = bool(enable);  _resort()
-func is_start_empty(): return _start_empty
+func set_percent_visible(percent):
+	_percent_visible = clamp(float(percent), 0, 1)
+	_resort()
+
+func get_percent_visible():
+	return _percent_visible
+
+func set_display_all_at_once(enable):
+	_appear_at_once = bool(enable)
+	_resort()
+
+func is_display_all_at_once():
+	return _appear_at_once
+
+func set_allow_node2d(enable):
+	_allow_node2d = bool(enable)
+	_resort()
+	
+func is_allowing_node2d():
+	return _allow_node2d
+
+func set_start_empty(enable):
+	_start_empty = bool(enable)
+	_resort()
+
+func is_start_empty():
+	return _start_empty
 
 func get_minimum_size():
 	return _cached_min_size
@@ -149,7 +181,7 @@ func _put_child_at_angle(child, radius, origin, angle_start, angle_size, appear)
 	var size = _get_child_min_size(child)
 	var target = Vector2(0,-radius).rotated(-(angle_start + angle_size/2)) + origin
 	
-	if child extends Control:
+	if child is Control:
 		child.set_size(size)
 	
 	if _custom_animator_func != null:
@@ -207,11 +239,11 @@ func _update_cached_min_size():
 	emit_signal("minimum_size_changed")
 
 func _default_animator(node, container_center, target_pos, time):
-	if node extends Control:
-		node.set_pos(container_center.linear_interpolate(target_pos - node.get_size() / 2 * time, time))
+	if node is Control:
+		node.set_position(container_center.linear_interpolate(target_pos - node.get_size() / 2 * time, time))
 	else:
-		node.set_pos(container_center.linear_interpolate(target_pos, time))
-	node.set_opacity(time)
+		node.set_position(container_center.linear_interpolate(target_pos, time))
+	#node.set_opacity(time)
 	if time == 0:
 		node.set_scale(Vector2(0.01,0.01))
 	else:
@@ -225,12 +257,12 @@ func _get_filtered_children():
 	while i > 0:
 		i -= 1
 		var keep = false
-		if children[i] extends Control:
+		if children[i] is Control:
 			keep = true
-		elif _allow_node2d and children[i] extends Node2D:
+		elif _allow_node2d and children[i] is Node2D:
 			keep = true
 		
-		if children[i] extends CanvasItem and children[i].is_hidden():
+		if children[i] is CanvasItem and children[i].visible==false:
 			keep = false
 		
 		if !keep:
@@ -238,7 +270,7 @@ func _get_filtered_children():
 	return children
 
 func _get_child_min_size(child):
-	if child extends Control:
+	if child is Control:
 		var size = child.get_combined_minimum_size()
 		if _force_squares:
 			var s = max(size.x, size.y)
@@ -248,9 +280,9 @@ func _get_child_min_size(child):
 		return Vector2(0,0)
 
 func _get_child_stretch_ratio(child):
-	if child extends Control and (child.get_h_size_flags() & SIZE_EXPAND or child.get_h_size_flags() & SIZE_EXPAND):
+	if child is Control and (child.get_h_size_flags() & SIZE_EXPAND or child.get_h_size_flags() & SIZE_EXPAND):
 		return child.get_stretch_ratio()
-	elif child extends Node2D:
+	elif child is Node2D:
 		return 1
 	elif _force_expand:
 		return 1
@@ -264,7 +296,10 @@ func _get_max_angle_for_diagonal(diagonal, radius):
 	else:
 		return asin(fit_length / radius) * 2
 
+func _private_set(value = null):
+	print("Invalid access to private variable!")
+	return value
 
-func _private(value = null):
+func _private_get(value = null):
 	print("Invalid access to private variable!")
 	return value
