@@ -13,7 +13,7 @@ var _custom_animator_func = null setget _private_set, _private_get
 
 ## Cached variables ##
 var _cached_min_size_key = "" setget _private_set, _private_get
-var _cached_min_size = Vector2(1,1) setget _private_set, _private_get
+var _cached_min_size = null setget _private_set, _private_get
 var _cached_min_size_dirty = false setget _private_set, _private_get
 
 ## Callbacks ##
@@ -21,9 +21,6 @@ var _cached_min_size_dirty = false setget _private_set, _private_get
 func _ready():
 	connect("sort_children", self, "_resort")
 	_resort()
-	# Called every time the node is added to the scene.
-	# Initialization here
-	pass
 
 ## Properties / Public API ##
 
@@ -88,7 +85,10 @@ func set_start_empty(enable):
 func is_start_empty():
 	return _start_empty
 
-func get_minimum_size():
+func _get_minimum_size():
+	if _cached_min_size == null:
+		_cached_min_size_dirty = true
+		_update_cached_min_size()
 	return _cached_min_size
 
 func _get_property_list():
