@@ -1,0 +1,13 @@
+ea4bc82a6ad023ab7ee23ee620429895
+::res://::1722074129
+README.md::TextFile::-1::1722074008::0::1::::<><>::
+::res://addons/::1722074008
+::res://addons/KOBUGE-games.CircularContainer/::1722074008
+addon-icon.png::CompressedTexture2D::4861592279620547328::1722074008::1722074130::1::::<><>::
+CircularContainer.gd::GDScript::-1::1722074077::0::1::::<>Container<>::
+icon.png::CompressedTexture2D::8842955058647498488::1722074008::1722074130::1::::<><>::
+icon.svg::CompressedTexture2D::7384189663947701052::1722074008::1722074130::1::::<><>::
+plugin.cfg::TextFile::-1::1722074008::0::1::::<><>::
+register.gd::GDScript::-1::1722074077::0::1::::<>EditorPlugin<>::
+::res://addons/KOBUGE-games.CircularContainer/examples/::1722074008
+basic.tscn::PackedScene::-1::1722074077::0::1::::<><>::res://addons/KOBUGE-games.CircularContainer/CircularContainer.gd<>res://addons/KOBUGE-games.CircularContainer/icon.png
