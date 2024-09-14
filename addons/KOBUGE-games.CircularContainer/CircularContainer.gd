@@ -1,33 +1,33 @@
-tool
+@tool
 extends Container
 
 ## Properties ##
-var _force_squares = false setget _private_set, _private_get
-var _force_expand = false setget _private_set, _private_get
-var _start_angle = 0 setget _private_set, _private_get
-var _percent_visible = 1 setget _private_set, _private_get
-var _appear_at_once = false setget _private_set, _private_get
-var _allow_node2d = false setget _private_set, _private_get
-var _start_empty = false setget _private_set, _private_get
-var _custom_animator_func = null setget _private_set, _private_get
+var _force_squares = false
+var _force_expand = false
+var _start_angle = 0
+var _percent_visible = 1
+var _appear_at_once = false
+var _allow_node2d = false
+var _start_empty = false
+var _custom_animator: Callable = Callable()
 
 ## Cached variables ##
-var _cached_min_size_key = "" setget _private_set, _private_get
-var _cached_min_size = null setget _private_set, _private_get
-var _cached_min_size_dirty = false setget _private_set, _private_get
+var _cached_min_size_key = ""
+var _cached_min_size = null
+var _cached_min_size_dirty = false
 
 ## Callbacks ##
 
 func _ready():
-	connect("sort_children", self, "_resort")
+	connect("sort_children", Callable(self, "_resort"))
 	_resort()
 
 ## Properties / Public API ##
 
 func set_custom_animator(object, method): # Params of animator function : node (Control or Node2D), center_pos, target_pos, time (0..1)
-	_custom_animator_func = funcref(object, method)
+	_custom_animator = Callable(object, method)
 func unset_custom_animator():
-	_custom_animator_func = null
+	_custom_animator = Callable()
 
 func set_force_squares(enable):
 	_force_squares = bool(enable)
@@ -51,11 +51,11 @@ func get_start_angle():
 	return _start_angle
 
 func set_start_angle_deg(angle):
-	_start_angle = deg2rad(float(angle))
+	_start_angle = deg_to_rad(float(angle))
 	_resort()
 
 func get_start_angle_deg():
-	return rad2deg(_start_angle)
+	return rad_to_deg(_start_angle)
 
 func set_percent_visible(percent):
 	_percent_visible = clamp(float(percent), 0, 1)
@@ -96,14 +96,14 @@ func _get_property_list():
 		{usage = PROPERTY_USAGE_CATEGORY, type = TYPE_NIL, name = "CircularContainer"},
 		{type = TYPE_BOOL, name = "arrange/force_squares"},
 		{type = TYPE_BOOL, name = "arrange/force_expand"},
-		{type = TYPE_REAL, name = "arrange/start_angle", hint = PROPERTY_HINT_RANGE, hint_string = "-1080,1080,0.01"},
+		{type = TYPE_FLOAT, name = "arrange/start_angle", hint = PROPERTY_HINT_RANGE, hint_string = "-1080,1080,0.01"},
 		{type = TYPE_BOOL, name = "arrange/start_empty"},
 		{type = TYPE_BOOL, name = "arrange/allow_node2d"},
-		{type = TYPE_REAL, name = "animate/percent_visible", hint = PROPERTY_HINT_RANGE, hint_string = "0,1,0.01"},
+		{type = TYPE_FLOAT, name = "animate/percent_visible", hint = PROPERTY_HINT_RANGE, hint_string = "0,1,0.01"},
 		{type = TYPE_BOOL, name = "animate/all_at_once"}
 	]
 
-func _set(property, value):
+func _set(property, value) -> bool:
 	if property == "arrange/force_squares": set_force_squares(value)
 	if property == "arrange/force_expand": set_force_expand(value)
 	elif property == "arrange/start_angle": set_start_angle_deg(value)
@@ -119,7 +119,7 @@ func _set(property, value):
 func _get(property):
 	if property == "arrange/force_squares": return _force_squares
 	if property == "arrange/force_expand": return _force_expand
-	elif property == "arrange/start_angle": return rad2deg(_start_angle)
+	elif property == "arrange/start_angle": return rad_to_deg(_start_angle)
 	elif property == "arrange/start_empty": return _start_empty
 	elif property == "arrange/allow_node2d": return _allow_node2d
 	elif property == "animate/percent_visible": return _percent_visible
@@ -184,8 +184,8 @@ func _put_child_at_angle(child, radius, origin, angle_start, angle_size, appear)
 	if child is Control:
 		child.set_size(size)
 	
-	if _custom_animator_func != null:
-		_custom_animator_func.call_func(child, origin, target, appear)
+	if not _custom_animator.is_null():
+		_custom_animator.call(child, origin, target, appear)
 	else:
 		_default_animator(child, origin, target, appear)
 
@@ -240,9 +240,9 @@ func _update_cached_min_size():
 
 func _default_animator(node, container_center, target_pos, time):
 	if node is Control:
-		node.set_position(container_center.linear_interpolate(target_pos - node.get_size() / 2 * time, time))
+		node.set_position(container_center.lerp(target_pos - node.get_size() / 2 * time, time))
 	else:
-		node.set_position(container_center.linear_interpolate(target_pos, time))
+		node.set_position(container_center.lerp(target_pos, time))
 	#node.set_opacity(time)
 	if time == 0:
 		node.set_scale(Vector2(0.01,0.01))
